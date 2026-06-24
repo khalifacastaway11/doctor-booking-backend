@@ -1,0 +1,109 @@
+// DOCTOR-BOOKING-BACKEND/prisma/schema.prisma
+generator client {
+  provider = "prisma-client"
+   output   = "../src/generated/prisma"
+  //output ="./generated"
+}
+
+
+datasource db {
+  provider = "postgresql"
+  
+}
+
+enum Role {
+  PATIENT
+  DOCTOR
+  ADMIN
+}
+
+enum AppointmentStatus {
+  BOOKED
+  CANCELLED
+  COMPLETED
+}
+
+model User {
+  id                  String        @id @default(uuid())
+  name                String
+  email               String        @unique
+  password            String
+  role                Role          @default(PATIENT)
+  doctorProfile       DoctorProfile?
+  patientAppointments Appointment[] @relation("PatientAppointments")
+  doctorAppointments  Appointment[] @relation("DoctorAppointments")
+  createdAt           DateTime      @default(now())
+  updatedAt           DateTime      @updatedAt
+  reviews             Review[]
+}
+
+model DoctorProfile {
+  id            String   @id @default(uuid())
+  userId        String   @unique
+  speciality    String 
+  bio           String?
+  clinicAddress String
+  city          String
+  price         Float
+  user          User     @relation(fields: [userId], references: [id])
+  slots         Slot[]
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  reviews       Review[]
+
+  //indexes
+  @@index([city])
+  @@index([speciality])
+}
+
+model Slot {
+  id          String       @id @default(uuid())
+  doctorId    String
+  startTime   DateTime
+  endTime     DateTime
+  isBooked    Boolean      @default(false)
+  doctor      DoctorProfile @relation(fields: [doctorId], references: [id])
+  appointment Appointment?
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  //indexes
+  @@index([doctorId])
+  @@index([startTime])
+  @@index([isBooked])
+}
+
+model Appointment {
+  id         String            @id @default(uuid())
+  patientId  String
+  doctorId   String
+  slotId     String            @unique
+  status     AppointmentStatus @default(BOOKED)
+  notes      String?
+  patient    User              @relation("PatientAppointments", fields: [patientId], references: [id])
+  doctor     User              @relation("DoctorAppointments", fields: [doctorId], references: [id])
+  slot       Slot              @relation(fields: [slotId], references: [id])
+  createdAt  DateTime          @default(now())
+  updatedAt  DateTime          @updatedAt
+
+  //indexes
+  @@index([patientId])
+  @@index([doctorId])
+  @@index([status])
+
+
+}
+
+model Review {
+  id            String   @id @default(uuid())
+  rating        Int
+  comment       String?
+  patientId     String
+  doctorId      String
+
+  createdat     DateTime @default(now())
+
+  patient     User          @relation(fields: [patientId], references: [id])
+  doctor      DoctorProfile @relation(fields: [doctorId], references: [id])
+  
+}
+

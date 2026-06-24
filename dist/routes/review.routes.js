@@ -1,0 +1,12 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const review_controller_1 = require("../controllers/review.controller");
+const auth_middleware_1 = require("../middleware/auth.middleware");
+const role_middleware_1 = require("../middleware/role.middleware");
+console.log("Imported functions:", { createReview: review_controller_1.createReview, getDoctorReviews: review_controller_1.getDoctorReviews, getMyReviewForDoctor: review_controller_1.getMyReviewForDoctor });
+const router = (0, express_1.Router)();
+router.post("/", auth_middleware_1.protect, (0, role_middleware_1.authorize)("PATIENT"), review_controller_1.createReview);
+router.get("/doctor/:doctorId", review_controller_1.getDoctorReviews);
+router.get("/my/:doctorId", auth_middleware_1.protect, (0, role_middleware_1.authorize)("PATIENT"), review_controller_1.getMyReviewForDoctor);
+exports.default = router;
