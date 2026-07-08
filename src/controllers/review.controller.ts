@@ -66,7 +66,7 @@ export const getDoctorReviews = async (req: AuthRequest, res: Response) => {
     const reviews = await prisma.review.findMany({
       where: { doctorId },
       include: { patient: { select: { name: true } } },
-      orderBy: { createdat: "desc" },
+      orderBy: { createdAt: "desc" },
     });
 
     const averageRating = reviews.length
@@ -99,7 +99,7 @@ export const getMyReviewForDoctor = async (req: AuthRequest, res: Response) => {
         patientId: req.user.userId,
         doctorId: doctorId,
       },
-      orderBy: { createdat: "desc" }, // use the correct field name from your schema
+      orderBy: { createdAt: "desc" },
     });
     return res.status(200).json({ review });
   } catch (error) {
