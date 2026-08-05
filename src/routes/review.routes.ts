@@ -3,7 +3,7 @@ import { createReview, getDoctorReviews,getMyReviewForDoctor } from "../controll
 import { protect } from "../middleware/auth.middleware"
 import { authorize } from "../middleware/role.middleware"
 
-console.log("Imported functions:", { createReview, getDoctorReviews, getMyReviewForDoctor })
+
 const router = Router();
 
 router.post("/", protect, authorize("PATIENT"), createReview)

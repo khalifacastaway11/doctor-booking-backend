@@ -32,6 +32,7 @@ export type UserMinAggregateOutputType = {
   role: $Enums.Role | null
   createdAt: Date | null
   updatedAt: Date | null
+  timezone: string | null
 }
 
 export type UserMaxAggregateOutputType = {
@@ -42,6 +43,7 @@ export type UserMaxAggregateOutputType = {
   role: $Enums.Role | null
   createdAt: Date | null
   updatedAt: Date | null
+  timezone: string | null
 }
 
 export type UserCountAggregateOutputType = {
@@ -52,6 +54,7 @@ export type UserCountAggregateOutputType = {
   role: number
   createdAt: number
   updatedAt: number
+  timezone: number
   _all: number
 }
 
@@ -64,6 +67,7 @@ export type UserMinAggregateInputType = {
   role?: true
   createdAt?: true
   updatedAt?: true
+  timezone?: true
 }
 
 export type UserMaxAggregateInputType = {
@@ -74,6 +78,7 @@ export type UserMaxAggregateInputType = {
   role?: true
   createdAt?: true
   updatedAt?: true
+  timezone?: true
 }
 
 export type UserCountAggregateInputType = {
@@ -84,6 +89,7 @@ export type UserCountAggregateInputType = {
   role?: true
   createdAt?: true
   updatedAt?: true
+  timezone?: true
   _all?: true
 }
 
@@ -167,6 +173,7 @@ export type UserGroupByOutputType = {
   role: $Enums.Role
   createdAt: Date
   updatedAt: Date
+  timezone: string | null
   _count: UserCountAggregateOutputType | null
   _min: UserMinAggregateOutputType | null
   _max: UserMaxAggregateOutputType | null
@@ -198,6 +205,7 @@ export type UserWhereInput = {
   role?: Prisma.EnumRoleFilter<"User"> | $Enums.Role
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"User"> | Date | string
+  timezone?: Prisma.StringNullableFilter<"User"> | string | null
   doctorProfile?: Prisma.XOR<Prisma.DoctorProfileNullableScalarRelationFilter, Prisma.DoctorProfileWhereInput> | null
   patientAppointments?: Prisma.AppointmentListRelationFilter
   doctorAppointments?: Prisma.AppointmentListRelationFilter
@@ -212,6 +220,7 @@ export type UserOrderByWithRelationInput = {
   role?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  timezone?: Prisma.SortOrderInput | Prisma.SortOrder
   doctorProfile?: Prisma.DoctorProfileOrderByWithRelationInput
   patientAppointments?: Prisma.AppointmentOrderByRelationAggregateInput
   doctorAppointments?: Prisma.AppointmentOrderByRelationAggregateInput
@@ -229,6 +238,7 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   role?: Prisma.EnumRoleFilter<"User"> | $Enums.Role
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"User"> | Date | string
+  timezone?: Prisma.StringNullableFilter<"User"> | string | null
   doctorProfile?: Prisma.XOR<Prisma.DoctorProfileNullableScalarRelationFilter, Prisma.DoctorProfileWhereInput> | null
   patientAppointments?: Prisma.AppointmentListRelationFilter
   doctorAppointments?: Prisma.AppointmentListRelationFilter
@@ -243,6 +253,7 @@ export type UserOrderByWithAggregationInput = {
   role?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  timezone?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.UserCountOrderByAggregateInput
   _max?: Prisma.UserMaxOrderByAggregateInput
   _min?: Prisma.UserMinOrderByAggregateInput
@@ -259,6 +270,7 @@ export type UserScalarWhereWithAggregatesInput = {
   role?: Prisma.EnumRoleWithAggregatesFilter<"User"> | $Enums.Role
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"User"> | Date | string
+  timezone?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
 }
 
 export type UserCreateInput = {
@@ -269,6 +281,7 @@ export type UserCreateInput = {
   role?: $Enums.Role
   createdAt?: Date | string
   updatedAt?: Date | string
+  timezone?: string | null
   doctorProfile?: Prisma.DoctorProfileCreateNestedOneWithoutUserInput
   patientAppointments?: Prisma.AppointmentCreateNestedManyWithoutPatientInput
   doctorAppointments?: Prisma.AppointmentCreateNestedManyWithoutDoctorInput
@@ -283,6 +296,7 @@ export type UserUncheckedCreateInput = {
   role?: $Enums.Role
   createdAt?: Date | string
   updatedAt?: Date | string
+  timezone?: string | null
   doctorProfile?: Prisma.DoctorProfileUncheckedCreateNestedOneWithoutUserInput
   patientAppointments?: Prisma.AppointmentUncheckedCreateNestedManyWithoutPatientInput
   doctorAppointments?: Prisma.AppointmentUncheckedCreateNestedManyWithoutDoctorInput
@@ -297,6 +311,7 @@ export type UserUpdateInput = {
   role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  timezone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   doctorProfile?: Prisma.DoctorProfileUpdateOneWithoutUserNestedInput
   patientAppointments?: Prisma.AppointmentUpdateManyWithoutPatientNestedInput
   doctorAppointments?: Prisma.AppointmentUpdateManyWithoutDoctorNestedInput
@@ -311,6 +326,7 @@ export type UserUncheckedUpdateInput = {
   role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  timezone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   doctorProfile?: Prisma.DoctorProfileUncheckedUpdateOneWithoutUserNestedInput
   patientAppointments?: Prisma.AppointmentUncheckedUpdateManyWithoutPatientNestedInput
   doctorAppointments?: Prisma.AppointmentUncheckedUpdateManyWithoutDoctorNestedInput
@@ -325,6 +341,7 @@ export type UserCreateManyInput = {
   role?: $Enums.Role
   createdAt?: Date | string
   updatedAt?: Date | string
+  timezone?: string | null
 }
 
 export type UserUpdateManyMutationInput = {
@@ -335,6 +352,7 @@ export type UserUpdateManyMutationInput = {
   role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  timezone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type UserUncheckedUpdateManyInput = {
@@ -345,6 +363,7 @@ export type UserUncheckedUpdateManyInput = {
   role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  timezone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type UserCountOrderByAggregateInput = {
@@ -355,6 +374,7 @@ export type UserCountOrderByAggregateInput = {
   role?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  timezone?: Prisma.SortOrder
 }
 
 export type UserMaxOrderByAggregateInput = {
@@ -365,6 +385,7 @@ export type UserMaxOrderByAggregateInput = {
   role?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  timezone?: Prisma.SortOrder
 }
 
 export type UserMinOrderByAggregateInput = {
@@ -375,6 +396,7 @@ export type UserMinOrderByAggregateInput = {
   role?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  timezone?: Prisma.SortOrder
 }
 
 export type UserScalarRelationFilter = {
@@ -392,6 +414,10 @@ export type EnumRoleFieldUpdateOperationsInput = {
 
 export type DateTimeFieldUpdateOperationsInput = {
   set?: Date | string
+}
+
+export type NullableStringFieldUpdateOperationsInput = {
+  set?: string | null
 }
 
 export type UserCreateNestedOneWithoutDoctorProfileInput = {
@@ -458,6 +484,7 @@ export type UserCreateWithoutDoctorProfileInput = {
   role?: $Enums.Role
   createdAt?: Date | string
   updatedAt?: Date | string
+  timezone?: string | null
   patientAppointments?: Prisma.AppointmentCreateNestedManyWithoutPatientInput
   doctorAppointments?: Prisma.AppointmentCreateNestedManyWithoutDoctorInput
   reviews?: Prisma.ReviewCreateNestedManyWithoutPatientInput
@@ -471,6 +498,7 @@ export type UserUncheckedCreateWithoutDoctorProfileInput = {
   role?: $Enums.Role
   createdAt?: Date | string
   updatedAt?: Date | string
+  timezone?: string | null
   patientAppointments?: Prisma.AppointmentUncheckedCreateNestedManyWithoutPatientInput
   doctorAppointments?: Prisma.AppointmentUncheckedCreateNestedManyWithoutDoctorInput
   reviews?: Prisma.ReviewUncheckedCreateNestedManyWithoutPatientInput
@@ -500,6 +528,7 @@ export type UserUpdateWithoutDoctorProfileInput = {
   role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  timezone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   patientAppointments?: Prisma.AppointmentUpdateManyWithoutPatientNestedInput
   doctorAppointments?: Prisma.AppointmentUpdateManyWithoutDoctorNestedInput
   reviews?: Prisma.ReviewUpdateManyWithoutPatientNestedInput
@@ -513,6 +542,7 @@ export type UserUncheckedUpdateWithoutDoctorProfileInput = {
   role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  timezone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   patientAppointments?: Prisma.AppointmentUncheckedUpdateManyWithoutPatientNestedInput
   doctorAppointments?: Prisma.AppointmentUncheckedUpdateManyWithoutDoctorNestedInput
   reviews?: Prisma.ReviewUncheckedUpdateManyWithoutPatientNestedInput
@@ -526,6 +556,7 @@ export type UserCreateWithoutPatientAppointmentsInput = {
   role?: $Enums.Role
   createdAt?: Date | string
   updatedAt?: Date | string
+  timezone?: string | null
   doctorProfile?: Prisma.DoctorProfileCreateNestedOneWithoutUserInput
   doctorAppointments?: Prisma.AppointmentCreateNestedManyWithoutDoctorInput
   reviews?: Prisma.ReviewCreateNestedManyWithoutPatientInput
@@ -539,6 +570,7 @@ export type UserUncheckedCreateWithoutPatientAppointmentsInput = {
   role?: $Enums.Role
   createdAt?: Date | string
   updatedAt?: Date | string
+  timezone?: string | null
   doctorProfile?: Prisma.DoctorProfileUncheckedCreateNestedOneWithoutUserInput
   doctorAppointments?: Prisma.AppointmentUncheckedCreateNestedManyWithoutDoctorInput
   reviews?: Prisma.ReviewUncheckedCreateNestedManyWithoutPatientInput
@@ -557,6 +589,7 @@ export type UserCreateWithoutDoctorAppointmentsInput = {
   role?: $Enums.Role
   createdAt?: Date | string
   updatedAt?: Date | string
+  timezone?: string | null
   doctorProfile?: Prisma.DoctorProfileCreateNestedOneWithoutUserInput
   patientAppointments?: Prisma.AppointmentCreateNestedManyWithoutPatientInput
   reviews?: Prisma.ReviewCreateNestedManyWithoutPatientInput
@@ -570,6 +603,7 @@ export type UserUncheckedCreateWithoutDoctorAppointmentsInput = {
   role?: $Enums.Role
   createdAt?: Date | string
   updatedAt?: Date | string
+  timezone?: string | null
   doctorProfile?: Prisma.DoctorProfileUncheckedCreateNestedOneWithoutUserInput
   patientAppointments?: Prisma.AppointmentUncheckedCreateNestedManyWithoutPatientInput
   reviews?: Prisma.ReviewUncheckedCreateNestedManyWithoutPatientInput
@@ -599,6 +633,7 @@ export type UserUpdateWithoutPatientAppointmentsInput = {
   role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  timezone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   doctorProfile?: Prisma.DoctorProfileUpdateOneWithoutUserNestedInput
   doctorAppointments?: Prisma.AppointmentUpdateManyWithoutDoctorNestedInput
   reviews?: Prisma.ReviewUpdateManyWithoutPatientNestedInput
@@ -612,6 +647,7 @@ export type UserUncheckedUpdateWithoutPatientAppointmentsInput = {
   role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  timezone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   doctorProfile?: Prisma.DoctorProfileUncheckedUpdateOneWithoutUserNestedInput
   doctorAppointments?: Prisma.AppointmentUncheckedUpdateManyWithoutDoctorNestedInput
   reviews?: Prisma.ReviewUncheckedUpdateManyWithoutPatientNestedInput
@@ -636,6 +672,7 @@ export type UserUpdateWithoutDoctorAppointmentsInput = {
   role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  timezone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   doctorProfile?: Prisma.DoctorProfileUpdateOneWithoutUserNestedInput
   patientAppointments?: Prisma.AppointmentUpdateManyWithoutPatientNestedInput
   reviews?: Prisma.ReviewUpdateManyWithoutPatientNestedInput
@@ -649,6 +686,7 @@ export type UserUncheckedUpdateWithoutDoctorAppointmentsInput = {
   role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  timezone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   doctorProfile?: Prisma.DoctorProfileUncheckedUpdateOneWithoutUserNestedInput
   patientAppointments?: Prisma.AppointmentUncheckedUpdateManyWithoutPatientNestedInput
   reviews?: Prisma.ReviewUncheckedUpdateManyWithoutPatientNestedInput
@@ -662,6 +700,7 @@ export type UserCreateWithoutReviewsInput = {
   role?: $Enums.Role
   createdAt?: Date | string
   updatedAt?: Date | string
+  timezone?: string | null
   doctorProfile?: Prisma.DoctorProfileCreateNestedOneWithoutUserInput
   patientAppointments?: Prisma.AppointmentCreateNestedManyWithoutPatientInput
   doctorAppointments?: Prisma.AppointmentCreateNestedManyWithoutDoctorInput
@@ -675,6 +714,7 @@ export type UserUncheckedCreateWithoutReviewsInput = {
   role?: $Enums.Role
   createdAt?: Date | string
   updatedAt?: Date | string
+  timezone?: string | null
   doctorProfile?: Prisma.DoctorProfileUncheckedCreateNestedOneWithoutUserInput
   patientAppointments?: Prisma.AppointmentUncheckedCreateNestedManyWithoutPatientInput
   doctorAppointments?: Prisma.AppointmentUncheckedCreateNestedManyWithoutDoctorInput
@@ -704,6 +744,7 @@ export type UserUpdateWithoutReviewsInput = {
   role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  timezone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   doctorProfile?: Prisma.DoctorProfileUpdateOneWithoutUserNestedInput
   patientAppointments?: Prisma.AppointmentUpdateManyWithoutPatientNestedInput
   doctorAppointments?: Prisma.AppointmentUpdateManyWithoutDoctorNestedInput
@@ -717,6 +758,7 @@ export type UserUncheckedUpdateWithoutReviewsInput = {
   role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  timezone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   doctorProfile?: Prisma.DoctorProfileUncheckedUpdateOneWithoutUserNestedInput
   patientAppointments?: Prisma.AppointmentUncheckedUpdateManyWithoutPatientNestedInput
   doctorAppointments?: Prisma.AppointmentUncheckedUpdateManyWithoutDoctorNestedInput
@@ -779,6 +821,7 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   role?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  timezone?: boolean
   doctorProfile?: boolean | Prisma.User$doctorProfileArgs<ExtArgs>
   patientAppointments?: boolean | Prisma.User$patientAppointmentsArgs<ExtArgs>
   doctorAppointments?: boolean | Prisma.User$doctorAppointmentsArgs<ExtArgs>
@@ -794,6 +837,7 @@ export type UserSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   role?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  timezone?: boolean
 }, ExtArgs["result"]["user"]>
 
 export type UserSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -804,6 +848,7 @@ export type UserSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   role?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  timezone?: boolean
 }, ExtArgs["result"]["user"]>
 
 export type UserSelectScalar = {
@@ -814,9 +859,10 @@ export type UserSelectScalar = {
   role?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  timezone?: boolean
 }
 
-export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "email" | "password" | "role" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
+export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "email" | "password" | "role" | "createdAt" | "updatedAt" | "timezone", ExtArgs["result"]["user"]>
 export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   doctorProfile?: boolean | Prisma.User$doctorProfileArgs<ExtArgs>
   patientAppointments?: boolean | Prisma.User$patientAppointmentsArgs<ExtArgs>
@@ -843,6 +889,7 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     role: $Enums.Role
     createdAt: Date
     updatedAt: Date
+    timezone: string | null
   }, ExtArgs["result"]["user"]>
   composites: {}
 }
@@ -1277,6 +1324,7 @@ export interface UserFieldRefs {
   readonly role: Prisma.FieldRef<"User", 'Role'>
   readonly createdAt: Prisma.FieldRef<"User", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"User", 'DateTime'>
+  readonly timezone: Prisma.FieldRef<"User", 'String'>
 }
     
 

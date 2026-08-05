@@ -495,10 +495,6 @@ export type DoctorProfileUncheckedUpdateOneWithoutUserNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.DoctorProfileUpdateToOneWithWhereWithoutUserInput, Prisma.DoctorProfileUpdateWithoutUserInput>, Prisma.DoctorProfileUncheckedUpdateWithoutUserInput>
 }
 
-export type NullableStringFieldUpdateOperationsInput = {
-  set?: string | null
-}
-
 export type FloatFieldUpdateOperationsInput = {
   set?: number
   increment?: number

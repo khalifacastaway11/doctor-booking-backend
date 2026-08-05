@@ -3,8 +3,10 @@ import { Response } from "express";
 import { prisma } from "../lib/prisma";
 import { AuthRequest } from "../middleware/auth.middleware";
 import { AppointmentStatus } from "../generated/prisma/client";
-
+import{ scheduleReminder } from "../services/reminder.service";
+import { cancelReminder } from "../services/reminder.service";
 export const bookAppointment = async (req: AuthRequest, res: Response) => {
+  
   try {
     if (!req.user) {
       return res.status(401).json({
@@ -85,8 +87,10 @@ export const bookAppointment = async (req: AuthRequest, res: Response) => {
           slot: true,
         },
       }),
+      
     ]);
-
+    
+    await scheduleReminder(appointment.id);
     return res.status(201).json({
       message: "Appointment booked successfully",
       appointment,
@@ -143,6 +147,7 @@ export const getMyAppointments = async (req: AuthRequest, res: Response) => {
 };
 
 export const cancelAppointment = async (req: AuthRequest, res: Response) => {
+
   try {
     if (!req.user) {
       return res.status(401).json({
@@ -179,6 +184,7 @@ export const cancelAppointment = async (req: AuthRequest, res: Response) => {
         message: "You can only cancel your own appointments",
       });
     }
+    await cancelReminder(appointment.id);
 
     await prisma.$transaction([
       prisma.appointment.delete({

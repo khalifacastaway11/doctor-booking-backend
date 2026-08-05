@@ -81,7 +81,8 @@ export const UserScalarFieldEnum = {
   password: 'password',
   role: 'role',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  timezone: 'timezone'
 } as const
 
 export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
@@ -122,6 +123,8 @@ export const AppointmentScalarFieldEnum = {
   slotId: 'slotId',
   status: 'status',
   notes: 'notes',
+  reminderSent: 'reminderSent',
+  reminderJobId: 'reminderJobId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
