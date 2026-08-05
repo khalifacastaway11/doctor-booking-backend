@@ -1,8 +1,9 @@
 import { Request, Response } from "express";
 import { prisma } from "../lib/prisma";
 import { AuthRequest } from "../middleware/auth.middleware";
-import logger from"../lib/logger"
+import logger from "../lib/logger";
 import redis from "../lib/redis";
+
 export const createDoctorProfile = async (req: AuthRequest, res: Response) => {
   try {
     if (!req.user) {
@@ -11,8 +12,7 @@ export const createDoctorProfile = async (req: AuthRequest, res: Response) => {
       });
     }
 
-    const { speciality,bio,clinicAddress, city, price } = req.body;
-    
+    const { speciality, bio, clinicAddress, city, price } = req.body;
 
     if (!speciality || !clinicAddress || !city || price === undefined) {
       return res.status(400).json({
@@ -53,7 +53,7 @@ export const createDoctorProfile = async (req: AuthRequest, res: Response) => {
       },
     });
     //clear cache
-    await redis.del("doctors:*")
+    await redis.del("doctors:*");
 
     return res.status(201).json({
       message: "Doctor profile created successfully",
@@ -70,7 +70,7 @@ export const createDoctorProfile = async (req: AuthRequest, res: Response) => {
 // src/controllers/doctor.controller.ts
 export const getDoctors = async (req: Request, res: Response) => {
   try {
-        // Build cache key from query parameters
+    // Build cache key from query parameters
     const queryKey = JSON.stringify(req.query);
     const cacheKey = `doctors:${queryKey}`;
 
@@ -91,7 +91,7 @@ export const getDoctors = async (req: Request, res: Response) => {
     if (search && typeof search === "string") {
       where.OR = [
         { user: { name: { contains: search, mode: "insensitive" } } },
-        { specialty: { contains: search, mode: "insensitive" } },
+        { speciality: { contains: search, mode: "insensitive" } },
       ];
     }
 
@@ -130,54 +130,53 @@ export const getDoctors = async (req: Request, res: Response) => {
   }
 };
 
-  export const getDoctorById = async (req: Request, res: Response) => {
-    try {
-      const id = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
-      if (!id) {
-        return res.status(400).json({ message: "Invalid doctor id" });
-      }
+export const getDoctorById = async (req: Request, res: Response) => {
+  try {
+    const id = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
+    if (!id) {
+      return res.status(400).json({ message: "Invalid doctor id" });
+    }
 
-      const doctor = await prisma.doctorProfile.findUnique({
-        where: {
-          id,
-        },
-        include: {
-          user: {
-            select: {
-              id: true,
-              name: true,
-              email: true,
-            },
-          },
-          slots: {
-            where: {
-              isBooked: false,
-              endTime:{gt: new Date()}
-            },
-            orderBy: {
-              startTime: "asc",
-            },
+    const doctor = await prisma.doctorProfile.findUnique({
+      where: {
+        id,
+      },
+      include: {
+        user: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
           },
         },
-      });
+        slots: {
+          where: {
+            isBooked: false,
+            endTime: { gt: new Date() },
+          },
+          orderBy: {
+            startTime: "asc",
+          },
+        },
+      },
+    });
 
-      if (!doctor) {
-        return res.status(404).json({
-          message: "Doctor not found",
-        });
-      }
-
-      return res.status(200).json({
-        doctor,
-      });
-    } catch (error) {
-      console.error("GET DOCTOR BY ID ERROR:", error);
-      return res.status(500).json({
-        message: "Internal server error",
+    if (!doctor) {
+      return res.status(404).json({
+        message: "Doctor not found",
       });
     }
-  }
 
+    return res.status(200).json({
+      doctor,
+    });
+  } catch (error) {
+    console.error("GET DOCTOR BY ID ERROR:", error);
+    return res.status(500).json({
+      message: "Internal server error",
+    });
+  }
+};
 
 export const getCities = async (req: Request, res: Response) => {
   try {
@@ -187,15 +186,16 @@ export const getCities = async (req: Request, res: Response) => {
       },
       distinct: ["city"],
     });
-    const cityList = cities.map((c: { city: string }) => c.city).filter(Boolean)
+    const cityList = cities
+      .map((c: { city: string }) => c.city)
+      .filter(Boolean);
     return res.status(200).json({
-      cities:cityList
-    })
-    }catch (error) {
-      console.error("GET  ERROR:", error);
-      return res.status(500).json({
-        message: "Internal server error",
-      });
-    }
+      cities: cityList,
+    });
+  } catch (error) {
+    console.error("GET CITIES ERROR:", error);
+    return res.status(500).json({
+      message: "Internal server error",
+    });
   }
-
+};
