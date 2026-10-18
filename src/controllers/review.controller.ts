@@ -1,6 +1,9 @@
 import { Response } from "express";
 import { prisma } from "../lib/prisma";
 import { AuthRequest } from "../middleware/auth.middleware";
+import logger from "../lib/logger";
+import { serializeError } from "../utils/serialize-error";
+
 
 export const createReview = async (req: AuthRequest, res: Response) => {
   try {
@@ -51,7 +54,7 @@ export const createReview = async (req: AuthRequest, res: Response) => {
       .status(201)
       .json({ message: "Review submitted successfully", review });
   } catch (error) {
-    console.error("CREATE REVIEW ERROR:", error);
+    logger.error("CREATE REVIEW ERROR:", {error:serializeError(error)});
     return res.status(500).json({ message: "Internal server error" });
   }
 };
@@ -60,13 +63,11 @@ export const getDoctorReviews = async (req: AuthRequest, res: Response) => {
   try {
     const { doctorId: rawDoctorId } = req.params;
     const doctorId = Array.isArray(rawDoctorId) ? rawDoctorId[0] : rawDoctorId;
-    if (!doctorId)
-      return res.status(400).json({ message: "Doctor ID required" });
-
+    
     const reviews = await prisma.review.findMany({
       where: { doctorId },
       include: { patient: { select: { name: true } } },
-      orderBy: { createdAt: "desc" },
+      orderBy: { createdat: "desc" },
     });
 
     const averageRating = reviews.length
@@ -80,7 +81,7 @@ export const getDoctorReviews = async (req: AuthRequest, res: Response) => {
       .status(200)
       .json({ reviews, averageRating, totalReviews: reviews.length });
   } catch (error) {
-    console.error("GET REVIEWS ERROR:", error);
+    logger.error("GET REVIEWS ERROR:", {error:serializeError(error)});
     return res.status(500).json({ message: "Internal server error" });
   }
 };
@@ -90,20 +91,18 @@ export const getMyReviewForDoctor = async (req: AuthRequest, res: Response) => {
     if (!req.user) return res.status(401).json({ message: "Unauthorized" });
     const { doctorId: rawDoctorId } = req.params;
     const doctorId = Array.isArray(rawDoctorId) ? rawDoctorId[0] : rawDoctorId;
-    if (!doctorId)
-      return res.status(400).json({ message: "Doctor ID required" });
-
+    
     // Get the most recent review by this patient for this doctor
     const review = await prisma.review.findFirst({
       where: {
         patientId: req.user.userId,
         doctorId: doctorId,
       },
-      orderBy: { createdAt: "desc" },
+      orderBy: { createdat: "desc" },
     });
     return res.status(200).json({ review });
   } catch (error) {
-    console.error("GET MY REVIEW ERROR:", error);
+    logger.error("GET MY REVIEW ERROR:", {error:serializeError(error)});
     return res.status(500).json({ message: "Internal server error" });
   }
 };

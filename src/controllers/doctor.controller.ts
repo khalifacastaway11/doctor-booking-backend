@@ -3,6 +3,9 @@ import { prisma } from "../lib/prisma";
 import { AuthRequest } from "../middleware/auth.middleware";
 import logger from "../lib/logger";
 import redis from "../lib/redis";
+import { profile } from "node:console";
+import { buildPagination } from "../schemas/common.schema";
+import { serializeError } from "../utils/serialize-error";
 
 export const createDoctorProfile = async (req: AuthRequest, res: Response) => {
   try {
@@ -14,12 +17,7 @@ export const createDoctorProfile = async (req: AuthRequest, res: Response) => {
 
     const { speciality, bio, clinicAddress, city, price } = req.body;
 
-    if (!speciality || !clinicAddress || !city || price === undefined) {
-      return res.status(400).json({
-        message: "specialty, clinicAddress, city and price are required",
-      });
-    }
-
+    
     const existingProfile = await prisma.doctorProfile.findUnique({
       where: {
         userId: req.user.userId,
@@ -60,7 +58,7 @@ export const createDoctorProfile = async (req: AuthRequest, res: Response) => {
       doctorProfile,
     });
   } catch (error) {
-    console.error("CREATE DOCTOR PROFILE ERROR:", error);
+    logger.error("CREATE DOCTOR PROFILE ERROR:", {error:serializeError(error)});
     return res.status(500).json({
       message: "Internal server error",
     });
@@ -83,7 +81,21 @@ export const getDoctors = async (req: Request, res: Response) => {
     logger.debug(`Cache miss for ${cacheKey}`);
 
     //if not in cache hit DB
-    const { search, city, minPrice, maxPrice, sort } = req.query;
+    const query=req.query as unknown as{
+      search?: string;
+      city?: string;
+      minPrice?: number;
+      maxPrice?: number;
+      sort?: string;
+      page: number;
+      limit: number;
+    }
+
+    const{search,city,minPrice,maxPrice,sort}=query;
+
+     //ensure numbers even if middleware fails
+    const page = Number(query.page) || 1;
+    const limit = Number(query.limit) || 12;
 
     let where: any = {};
 
@@ -101,10 +113,10 @@ export const getDoctors = async (req: Request, res: Response) => {
     }
 
     // Price range
-    if (minPrice || maxPrice) {
+    if (minPrice !==undefined|| maxPrice !==undefined) {
       where.price = {};
-      if (minPrice) where.price.gte = Number(minPrice);
-      if (maxPrice) where.price.lte = Number(maxPrice);
+      if (minPrice !==undefined) where.price.gte = minPrice;
+      if (maxPrice !==undefined) where.price.lte = maxPrice;
     }
 
     // Sorting
@@ -112,20 +124,27 @@ export const getDoctors = async (req: Request, res: Response) => {
     if (sort === "price_asc") orderBy = { price: "asc" };
     else if (sort === "price_desc") orderBy = { price: "desc" };
     else orderBy = { user: { name: "asc" } };
-
-    const doctors = await prisma.doctorProfile.findMany({
-      where,
-      include: {
-        user: {
-          select: { id: true, name: true, email: true },
+    
+    //parallel count and data fetch
+   const [total, doctors] = await Promise.all([
+      prisma.doctorProfile.count({ where }),
+      prisma.doctorProfile.findMany({
+        where,
+        include: {
+          user: { select: { id: true, name: true, email: true } },
         },
-      },
-      orderBy,
-    });
+        orderBy,
+        skip: (page - 1) * limit,
+        take: limit,
+      }),
+    ]);
 
-    return res.status(200).json({ doctors });
+    return res.status(200).json({
+      doctors,
+      pagination: buildPagination(total, page, limit),
+    });
   } catch (error) {
-    console.error("GET DOCTORS ERROR:", error);
+    logger.error("GET DOCTORS ERROR:", {error:serializeError(error)});
     return res.status(500).json({ message: "Internal server error" });
   }
 };
@@ -133,9 +152,7 @@ export const getDoctors = async (req: Request, res: Response) => {
 export const getDoctorById = async (req: Request, res: Response) => {
   try {
     const id = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
-    if (!id) {
-      return res.status(400).json({ message: "Invalid doctor id" });
-    }
+    
 
     const doctor = await prisma.doctorProfile.findUnique({
       where: {
@@ -171,7 +188,7 @@ export const getDoctorById = async (req: Request, res: Response) => {
       doctor,
     });
   } catch (error) {
-    console.error("GET DOCTOR BY ID ERROR:", error);
+    logger.error("GET DOCTOR BY ID ERROR:", {error:serializeError(error)});
     return res.status(500).json({
       message: "Internal server error",
     });
@@ -193,9 +210,55 @@ export const getCities = async (req: Request, res: Response) => {
       cities: cityList,
     });
   } catch (error) {
-    console.error("GET CITIES ERROR:", error);
+    logger.error("GET CITIES ERROR:", {error:serializeError(error)});
     return res.status(500).json({
       message: "Internal server error",
     });
+  }
+};
+
+// Update the logged-in doctor's profile
+export const updateDoctorProfile = async (req: AuthRequest, res: Response) => {
+  try {
+    if (!req.user) return res.status(401).json({ message: "Unauthorized" });
+    if (req.user.role !== "DOCTOR") {
+      return res.status(403).json({ message: "Only doctors can update their profile" });
+    }
+
+    const { speciality, bio, clinicAddress, city, price } = req.body;
+
+    
+
+    const existing = await prisma.doctorProfile.findUnique({
+      where: { userId: req.user.userId },
+    });
+
+    if (!existing) {
+      return res.status(404).json({ message: "Doctor profile not found" });
+    }
+
+    const updated = await prisma.doctorProfile.update({
+      where: { userId: req.user.userId },
+      data: {
+        speciality: speciality,
+        bio,
+        clinicAddress,
+        city,
+        price: Number(price),
+      },
+      include: {
+        user: {
+          select: { id: true, name: true, email: true, role: true },
+        },
+      },
+    });
+
+    return res.status(200).json({
+      message: "Profile updated successfully",
+      doctorProfile: updated,
+    });
+  } catch (error) {
+    logger.error("UPDATE DOCTOR PROFILE ERROR:", {error:serializeError(error)});
+    return res.status(500).json({ message: "Internal server error" });
   }
 };

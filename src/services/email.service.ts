@@ -41,7 +41,7 @@ export const sendReminderEmail = async (
 
   const html = `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e0e0e0; border-radius: 10px;">
-      <h2 style="color: #4f46e5;">🩺 Appointment Reminder</h2>
+      <h2 style="color: #0f766e;">🩺 Appointment Reminder</h2>
       <p>Dear <strong>${patientName}</strong>,</p>
       <p>This is a friendly reminder that you have an upcoming appointment:</p>
       <div style="background: #f8fafc; padding: 15px; border-radius: 8px; margin: 15px 0;">
@@ -65,5 +65,43 @@ export const sendReminderEmail = async (
     to,
     subject: `🩺 Reminder: Appointment with Dr. ${doctorName} on ${formattedDate}`,
     html,
+    text: `Appointment Reminder\n\nDoctor: Dr. ${doctorName}\nDate: ${formattedDate}\nTime: ${formattedStart} – ${formattedEnd}\nClinic: ${clinicAddress}`
+  });
+};
+
+
+export const sendPasswordResetEmail = async (
+  to: string,
+  name: string,
+  resetLink: string
+) => {
+  const html = `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 24px; border: 1px solid #e2e8f0; border-radius: 12px;">
+      <h2 style="color: #0f766e; margin-top: 0;">🔐 Reset your password</h2>
+      <p>Hi <strong>${name}</strong>,</p>
+      <p>We received a request to reset your password. Click the button below to choose a new one.</p>
+      <p style="text-align: center; margin: 32px 0;">
+        <a href="${resetLink}"
+           style="display: inline-block; padding: 14px 28px; background: #0f766e; color: white; text-decoration: none; border-radius: 999px; font-weight: bold;">
+          Reset Password
+        </a>
+      </p>
+      <p style="color: #64748b; font-size: 14px;">
+        This link expires in 1 hour. If you didn't request this, you can safely ignore this email.
+      </p>
+      <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 24px 0;" />
+      <p style="color: #94a3b8; font-size: 12px;">
+        Or copy this URL into your browser:<br />
+        <span style="word-break: break-all;">${resetLink}</span>
+      </p>
+    </div>
+  `;
+
+  await transporter.sendMail({
+    from: `"DoctorBooking" <${process.env.SMTP_USER}>`,
+    to,
+    subject: "Reset your password",
+    html,
+    text: `Reset your password\n\nHi ${name},\n\nClick this link to reset your password (expires in 1 hour):\n${resetLink}\n\nIf you didn't request this, ignore this email.`,
   });
 };

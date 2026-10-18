@@ -31,7 +31,8 @@ export const handler = async (job: Job) => {
     logger.info(`Skipping reminder for ${appointmentId} (already sent or cancelled)`);
     return;
   }
-
+  
+  const patientTimeZone=appointment.patient.timeZone ||"UTC"
   const clinicAddress = appointment.slot.doctor.clinicAddress || "Clinic address not available";
 
   await sendReminderEmail(

@@ -5,7 +5,7 @@ import routes from "./routes";
 import rateLimit from "express-rate-limit";
 import logger from "./lib/logger"
 import { errorHandler } from "./middleware/error.middleware";
-
+import cookieParser from "cookie-parser"
 const app = express();
 
 //rate limiting
@@ -37,16 +37,18 @@ handler:(req,res)=>{
 }
 })
 app.use("/api/auth", authLimiter);
-const allowedOrigin=process.env.CORS_ORIGIN || 'http://localhost:3000';
+//cors with credential
+const allowedOrigin=(process.env.CORS_ORIGIN || 'http://localhost:3000').split(",");
 app.use(cors({
   origin:allowedOrigin,
   credentials: true,
 }));
 app.use(express.json());
+app.use(cookieParser())
 
 //request logging
 app.use((req,res,next)=>{
-  logger.info(`${req.method} ${req.url}`, {ip:req.ip, userAgent:req.get("user-agent")})
+  logger.info(`${req.method} ${req.url}`, {ip:req.ip, })
   next()
 })
 //health check
