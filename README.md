@@ -177,6 +177,76 @@ createcreatedb doctor_booking
 
 ---
 
+🗄️ Entity‑Relationship Diagram (Text Description)
+┌─────────────────────────────────────────────────────────────┐
+│                          User                              │
+├─────────────────────────────────────────────────────────────┤
+│ id (PK)         UUID                                      │
+│ name             String                                   │
+│ email            String (unique)                          │
+│ password         String                                   │
+│ role             Role (PATIENT / DOCTOR / ADMIN)          │
+│ createdAt        DateTime                                 │
+│ updatedAt        DateTime                                 │
+│ timezone         String? (NEW) default="UTC"              │
+│                                                           │
+│ + hasOne DoctorProfile                                    │
+│ + hasMany PatientAppointments (as patient)                │
+│ + hasMany DoctorAppointments (as doctor)                 │
+│ + hasMany Reviews                                         │
+└─────────────────────────────────────────────────────────────┘
+         │1                    │1
+         │                     │
+         ▼                     ▼
+┌─────────────────────┐ ┌─────────────────────────────────────┐
+│   DoctorProfile     │ │          Appointment                │
+├─────────────────────┤ ├─────────────────────────────────────┤
+│ id (PK)   UUID      │ │ id (PK)          UUID              │
+│ userId (FK) String  │ │ patientId (FK)   String            │
+│ speciality String   │ │ doctorId (FK)    String            │
+│ bio String?         │ │ slotId (FK)      String (unique)   │
+│ clinicAddress String│ │ status           AppointmentStatus  │
+│ city String         │ │ notes            String?            │
+│ price Float         │ │ reminderSent     Boolean (NEW)     │
+│ createdAt DateTime  │ │ reminderJobId    String? (NEW)     │
+│ updatedAt DateTime  │ │ createdAt        DateTime          │
+│                     │ │ updatedAt        DateTime          │
+│ + belongsTo User    │ │                                   │
+│ + hasMany Slots     │ │ + belongsTo Patient (User)        │
+│ + hasMany Reviews   │ │ + belongsTo Doctor (User)         │
+└─────────────────────┘ │ + belongsTo Slot                  │
+         │1              └─────────────────────────────────────┘
+         │1                         │1
+         ▼                          │
+┌─────────────────────┐             │
+│       Slot          │             │
+├─────────────────────┤             │
+│ id (PK)   UUID      │             │
+│ doctorId (FK) String│             │
+│ startTime DateTime  │             │
+│ endTime   DateTime  │             │
+│ isBooked  Boolean   │             │
+│ createdAt DateTime  │             │
+│ updatedAt DateTime  │             │
+│                     │             │
+│ + belongsTo DoctorProfile        │
+│ + hasOne Appointment             │
+└─────────────────────┘             │
+                                    │
+┌─────────────────────┐             │
+│      Review         │             │
+├─────────────────────┤             │
+│ id (PK)   UUID      │             │
+│ rating    Int       │             │
+│ comment   String?   │             │
+│ patientId (FK)      │             │
+│ doctorId (FK)       │             │
+│ createdat DateTime  │             │
+│                     │             │
+│ + belongsTo Patient (User)       │
+│ + belongsTo Doctor (DoctorProfile)│
+└─────────────────────┘             │
+
 ## 📚 API Documentation
 
 See [API.md](./API.md) for complete API endpoint documentation.
@@ -234,7 +304,7 @@ POST   /api/reviews              # Submit a review
 - name, email, password (hashed)
 - role (PATIENT | DOCTOR | ADMIN)
 - createdAt, updatedAt
-
+- timezone
 **DoctorProfile**
 - id (UUID)
 - userId (foreign key to User)
@@ -256,6 +326,8 @@ POST   /api/reviews              # Submit a review
 - patientId, doctorId (foreign keys)
 - slotId (unique, one appointment per slot)
 - status (BOOKED | CANCELLED | COMPLETED)
+- reminderSent
+- reminderJobId
 - notes
 - createdAt, updatedAt
 - Indexes: patientId, doctorId, status
@@ -280,6 +352,15 @@ POST   /api/reviews              # Submit a review
 ✅ **SQL Injection Protection** - Prisma parameterized queries
 
 ---
+🧩 External Services (Architecture Overview)
+While the ERD covers the database, the following external services are now part of your system:
+
+Service	Purpose	Interaction
+Redis	Caching + BullMQ job storage	Connected via src/lib/redis.ts. Caches /doctors list; stores BullMQ jobs.
+BullMQ	Job queue for reminders	Schedules and processes reminder jobs 24h before appointment.
+Nodemailer + SMTP	Email delivery	Sends reminder emails via Gmail or SendGrid.
+Winston	Structured logging	Logs all important events (job creation, email sent, errors).
+
 
 ## 🚀 Deployment
 
